@@ -139,6 +139,9 @@
 						</li>
 					@endif
 					@if (empty($authUser))
+						<li class="nav-item">
+							<a href="{{ route('blog.index') }}" class="nav-link"><i class="fa-solid fa-blog"></i> {{ t('blog') }}</a>
+						</li>
 						<li class="nav-item dropdown no-arrow open-on-hover d-md-block d-sm-none d-none">
 							<a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
 								<i class="fa-solid fa-user"></i>
@@ -161,6 +164,9 @@
 							<a href="{{ urlGen()->register() }}" class="nav-link"><i class="fa-regular fa-user"></i> {{ t('sign_up') }}</a>
 						</li>
 					@else
+						<li class="nav-item">
+							<a href="{{ route('blog.index') }}" class="nav-link"><i class="fa-solid fa-blog"></i> {{ t('blog') }}</a>
+						</li>
 						<li class="nav-item dropdown no-arrow open-on-hover">
 							<a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
 								<i class="fa-solid fa-circle-user"></i>

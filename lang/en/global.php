@@ -155,6 +155,8 @@ return [
 	'signout' => 'Signout',
 	'sign_out' => 'Sign Out',
 	
+	// Blog
+    'blog' => 'Blog',
     
     // Signup
     'create_your_account' => 'Create your account.',

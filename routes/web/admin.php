@@ -51,7 +51,18 @@ use App\Http\Controllers\Web\Admin\SubAdmin2Controller;
 use App\Http\Controllers\Web\Admin\SystemController;
 use App\Http\Controllers\Web\Admin\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BlogController;
 
+// Blog
+// Admin Routes
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/blogs', [BlogController::class, 'adminIndex'])->name('admin.blogs');
+    Route::get('/blogs/create', [BlogController::class, 'adminCreate'])->name('admin.blogs.create');
+    Route::post('/blogs', [BlogController::class, 'adminStore'])->name('admin.blogs.store');
+    Route::get('/blogs/{id}/edit', [BlogController::class, 'adminEdit'])->name('admin.blogs.edit');
+    Route::put('/blogs/{id}', [BlogController::class, 'adminUpdate'])->name('admin.blogs.update');
+    Route::delete('/blogs/{id}', [BlogController::class, 'adminDestroy'])->name('admin.blogs.destroy');
+});
 // Auth
 Route::namespace('Auth')
 	->group(function ($router) {

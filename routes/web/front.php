@@ -58,8 +58,14 @@ use App\Http\Controllers\Web\Front\Search\UserController;
 use App\Http\Controllers\Web\Front\SitemapController;
 use App\Http\Controllers\Web\Front\SitemapsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BlogController;
 
 $isDomainmappingAvailable = (plugin_exists('domainmapping') && plugin_installed_file_exists('domainmapping'));
+
+
+// Blog
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Select Language
 Route::namespace('Locale')

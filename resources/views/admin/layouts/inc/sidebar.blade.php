@@ -168,6 +168,11 @@
 							</a>
 						</li>
 					@endif
+					<li class="sidebar-item">
+						<a href="{{ route('admin.blogs') }}" class="sidebar-link waves-effect waves-dark">
+							<i class="fa-solid fa-blog"></i> <span class="hide-menu">Blogs</span>
+						</a>
+					</li>
 					{!! $pluginsMenu !!}
 					
 					{{-- ======================================= --}}
