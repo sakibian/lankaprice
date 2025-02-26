@@ -64,6 +64,7 @@
 						<div class="footer-col">
 							<h4 class="footer-title">{{ t('Contact and Sitemap') }}</h4>
 							<ul class="list-unstyled footer-nav">
+								<li><a href="{{ route('blog.index') }}"> {{ t('blog') }}</a></li>
 								<li><a href="{{ urlGen()->contact() }}"> {{ t('Contact') }} </a></li>
 								<li><a href="{{ urlGen()->sitemap() }}"> {{ t('sitemap') }} </a></li>
 								@if (isset($countries) && $countries->count() > 1)
