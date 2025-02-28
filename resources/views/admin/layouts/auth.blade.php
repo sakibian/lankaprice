@@ -80,7 +80,7 @@
 @yield('before_scripts')
 
 <script>
-    {{-- The app's default auth field --}}
+    // {{-- The app's default auth field --}}
     var defaultAuthField = '{{ old('auth_field', getAuthField()) }}';
     var phoneCountry = '';
 </script>

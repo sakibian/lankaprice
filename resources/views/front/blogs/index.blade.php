@@ -8,19 +8,29 @@
         @foreach($blogs as $blog)
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card shadow-sm border-0">
-                @if($blog->image)
-                    <img src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->title }}" class="card-img-top rounded-top" style="height: 200px; object-fit: cover;">
-                @else
-                    <img src="{{ asset('images/default-blog.jpg') }}" alt="No Image" class="card-img-top rounded-top" style="height: 200px; object-fit: cover;">
-                @endif
+                <a href="{{ route('blog.show', $blog->slug) }}">
+                    <img src="{{ $blog->image ? asset('storage/' . $blog->image) : asset('images/default-blog.jpg') }}" 
+                         alt="{{ $blog->title }}" 
+                         class="card-img-top rounded-top" 
+                         style="height: 200px; object-fit: cover;">
+                </a>
                 <div class="card-body">
-                    <h5 class="card-title">
+                    <h3 class="card-title">
                         <a href="{{ route('blog.show', $blog->slug) }}" class="text-dark text-decoration-none">
                             {{ Str::limit($blog->title, 50) }}
                         </a>
-                    </h5>
+                    </h3>
                     <p class="text-muted small">By Admin • {{ $blog->created_at->format('M d, Y') }}</p>
-                    <p class="card-text">{{ Str::limit($blog->content, 100) }}</p>
+                    <p class="card-text">{!! Str::limit(strip_tags($blog->content), 100) !!}</p>
+                    
+                     <!-- Show Tags -->
+                     <p class="mt-2">
+                        @foreach($blog->tags as $tag)
+                            <span class="badge bg-primary">{{ $tag->name }}</span>
+                        @endforeach
+                    </p>
+
+                    
                     <a href="{{ route('blog.show', $blog->slug) }}" class="btn btn-primary btn-sm">Read More</a>
                 </div>
             </div>

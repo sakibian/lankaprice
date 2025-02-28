@@ -12,6 +12,10 @@ class Blog extends Model
 
     protected $fillable = ['title', 'slug', 'content', 'image', 'author_id'];
 
+    public function tags() {
+        return $this->belongsToMany(Tag::class, 'blog_tag');
+    }
+
     // Automatically generate slug when creating a blog post
     protected static function boot()
     {

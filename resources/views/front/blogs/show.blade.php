@@ -25,13 +25,23 @@
         <div class="col-lg-8 mx-auto">
             <div class="card shadow-sm border-0 p-4">
                 <div class="card-body">
-                    <p class="card-text" style="line-height: 1.8; font-size: 18px;">
-                        {!! nl2br(e($blog->content)) !!}
+                    <p class="card-text" style="line-height: 0.9; font-size: 22px;">
+                        {{-- {!! nl2br(e($blog->content)) !!} --}}
+                        {{-- {!! strip_tags($blog->content) !!} --}}
+                        {!! $blog->content !!}
                     </p>
                 </div>
             </div>
         </div>
+        <!-- Show Tags -->
+        <div class="col-lg-8 mx-auto mt-3">
+            <strong>Tags:</strong>
+            @foreach($blog->tags as $tag)
+                <span class="badge bg-primary">{{ $tag->name }}</span>
+            @endforeach
+        </div>
     </div>
+
 
     <!-- Back to Blog List -->
     <div class="text-center mt-4">

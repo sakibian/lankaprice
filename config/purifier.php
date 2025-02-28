@@ -79,4 +79,19 @@ return [
         ],
     ],
 
+    'HTML' => [
+        'allowed' => [
+            'div', 'span', 'strong', 'em', 'b', 'i', 'u', 'p', 'a', 'ul', 'ol', 'li', 'br', 'hr', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'table', 'thead', 'tbody', 'th', 'td', 'tr', 'blockquote', 'code', 'pre',
+        ],
+        'allowed_attributes' => [
+            'a' => ['href', 'title', 'target'],
+            'img' => ['src', 'alt', 'width', 'height'],
+            'span' => ['style'], // Allow style attribute for span
+            'div' => ['style'],  // Allow style attribute for div
+            // Add other tags or attributes as needed
+        ],
+    ],
+
+
 ];

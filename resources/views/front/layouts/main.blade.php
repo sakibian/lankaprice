@@ -37,14 +37,16 @@
 			@if (config('services.facebook.client_id'))
 				<meta property="fb:app_id" content="{{ config('services.facebook.client_id') }}" />
 			@endif
-			{{-- {!! $og->renderTags() !!} --}}
+			<meta property="og:title" content="{{ $og['title'] }}" />
+			<meta property="og:description" content="{{ $og['description'] }}" />
 			{!! MetaTag::twitterCard() !!}
 		@endif
 	@else
 		@if (config('services.facebook.client_id'))
 			<meta property="fb:app_id" content="{{ config('services.facebook.client_id') }}" />
 		@endif
-		{{-- {!! $og->renderTags() !!} --}}
+		<meta property="og:title" content="{{ $og['title'] }}" />
+		<meta property="og:description" content="{{ $og['description'] }}" />
 		{!! MetaTag::twitterCard() !!}
 	@endif
 	@include('feed::links')
@@ -231,12 +233,12 @@
 	var countryCode = '{{ config('country.code', 0)  }}';
 	var timerNewMessagesChecking = {{ (int)config('settings.other.timer_new_messages_checking', 0)  }};
 	
-	{{-- Dark Mode --}}
+	// {{-- Dark Mode --}}
 	var isSettingsAppDarkModeEnabled = {{ isSettingsAppDarkModeEnabled() ? 'true' : 'false' }};
 	var isDarkModeEnabledForCurrentUser = {{ isDarkModeEnabledForCurrentUser() ? 'true' : 'false' }};
 	var isDarkModeEnabledForCurrentDevice = {{ isDarkModeEnabledForCurrentDevice() ? 'true' : 'false' }};
 	
-	{{-- The app's default auth field --}}
+	// {{-- The app's default auth field --}}
 	var defaultAuthField = '{{ old('auth_field', getAuthField()) }}';
 	var phoneCountry = '{{ config('country.code') }}';
 	
@@ -278,9 +280,9 @@
 			width: '100%',
 			dropdownAutoWidth: 'true'
 		};
-		{{-- Simple Select Boxes --}}
+		// {{-- Simple Select Boxes --}}
 		let select2Params = {...largeDataSelect2Params};
-		{{-- Hiding the search box --}}
+		// {{-- Hiding the search box --}}
 		select2Params.minimumResultsForSearch = Infinity;
 		
 		if (typeof langLayout !== 'undefined' && typeof langLayout.select2 !== 'undefined') {
@@ -291,10 +293,10 @@
 		$('.selecter').select2(select2Params);
 		$('.large-data-selecter').select2(largeDataSelect2Params);
 		
-		{{-- Social Media Share --}}
+		// {{-- Social Media Share --}}
 		SocialShare.init({width: 640, height: 480});
 		
-		{{-- Modal Login --}}
+		// {{-- Modal Login --}}
 		@if (isset($errors) && $errors->any())
 			@if ($errors->any() && old('quickLoginForm')=='1')
 				{{-- Re-open the modal if error occured --}}
@@ -302,7 +304,7 @@
 			@endif
 		@endif
 		
-		{{-- Reorder the modal country list --}}
+		// {{-- Reorder the modal country list --}}
 		const modalCountryListReorder = new BsRowColumnsReorder('#modalCountryList', {defaultColumns: 4});
 	});
 </script>

@@ -1,8 +1,7 @@
 @extends('admin.layouts.master')
 
 @section('content')
-<div class="container">
-    
+<div class="container"> 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Edit Blog</h1>
         <div>
@@ -13,38 +12,108 @@
             </form>
         </div>
     </div>
-    
-    <div class="card rounded-2 p-4">
-        <form action="{{ route('admin.blogs.update', $blog->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf @method('PUT')
-    
-            <label>Title</label>
-            <input type="text" name="title" class="form-control" value="{{ $blog->title }}" required>
-            
-            <label>Slug</label>
-            <input type="text" name="slug" class="form-control" value="{{ $blog->slug }}" required>
-            
-            <label>Content</label>
-            <textarea id="contentEditor" name="content" class="form-control" required>{{ $blog->content }}</textarea>
-    
-            <label>Image</label>
-            <input type="file" name="image" class="form-control">
-    
-            <button type="submit" class="btn btn-success mt-3">Update</button>
-        </form>
-    </div>
+
+    <!-- Blog Form -->
+    <form id="blogForm" action="{{ route('admin.blogs.update', $blog->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf @method('PUT')
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" id="title" name="title" class="form-control" value="{{ old('title', $blog->title) }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Slug</label>
+            <input type="text" id="slug" name="slug" class="form-control" value="{{ old('slug', $blog->slug) }}" required>
+            <small class="text-muted d-block mt-2">URL: <span id="slug-url">{{ url('blog/') }}/</span><span id="slug-preview"></span></small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tags</label>
+            <select name="tags[]" class="form-control select2" multiple>
+                @foreach($tags as $tag)
+                    <option value="{{ $tag->name }}" 
+                        @if(in_array($tag->name, old('tags', $blog->tags->pluck('name')->toArray())) ) selected @endif>
+                        {{ $tag->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea id="contentEditor" name="content" class="form-control" required>{{ old('content', $blog->content) }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Image</label>
+            <input type="file" name="image" id="image" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Update</button>
+    </form>
 </div>
 
-
-<!-- Include TinyMCE -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{{ asset('assets/plugins/tinymce/tinymce.min.js') }}"></script>
 <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Initialize TinyMCE
     tinymce.init({
-        selector: '#contentEditor',
+        selector: "#contentEditor",
+        plugins: "lists link table code",
+        toolbar: "undo redo | bold italic underline | forecolor backcolor | bullist numlist blockquote table | link unlink | alignleft aligncenter alignright | outdent indent | fontsizeselect | code",
         height: 400,
-        plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-        toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-        content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }'
+        setup: editor => {
+            editor.on("change", () => tinymce.triggerSave()); // Ensure content is saved
+        }
     });
+
+    // Slug Generation
+    const titleInput = document.getElementById("title");
+    const slugInput = document.getElementById("slug");
+    const slugPreview = document.getElementById("slug-preview");
+
+    const generateSlug = text => text
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')  
+        .replace(/\s+/g, '-')     
+        .replace(/^-+|-+$/g, '');  
+
+    const updateSlug = () => {
+        const slug = generateSlug(titleInput.value);
+        slugInput.value = slug;
+        slugPreview.textContent = slug;
+    };
+
+    titleInput.addEventListener("input", updateSlug);
+    slugInput.addEventListener("input", () => slugPreview.textContent = slugInput.value);
+    updateSlug(); // Initialize on page load
+
+    // Form Submission Validation
+    document.getElementById("blogForm").addEventListener("submit", event => {
+        tinymce.triggerSave(); // Ensure TinyMCE content is saved
+        const content = document.getElementById("contentEditor").value.trim();
+        const image = document.getElementById("image");
+
+        if (!content) {
+            alert("Content cannot be empty.");
+            tinymce.get("contentEditor").focus(); // Focus TinyMCE editor
+            event.preventDefault();
+            return;
+        }
+
+        if (image.files.length) {
+            const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            const file = image.files[0];
+
+            if (!allowedTypes.includes(file.type) || file.size > maxSize) {
+                alert("Invalid image file. Only JPG, PNG, and GIF up to 2MB are allowed.");
+                event.preventDefault();
+            }
+        }
+    });
+});
+
 </script>
 @endsection

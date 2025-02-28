@@ -35,11 +35,12 @@
 			<div class="row {{ $rowColsLg }} {{ $rowColsMd }} row-cols-sm-2 row-cols-2 g-3">
 				
 				@if (!config('settings.footer.hide_links'))
-					<div class="col">
-						<div class="footer-col">
-							<h4 class="footer-title">{{ t('about_us') }}</h4>
-							<ul class="list-unstyled footer-nav">
-								@if (isset($pages) && $pages->count() > 0)
+					{{-- About Us Section --}}
+					@if (isset($pages) && $pages->count() > 0)
+						<div class="col">
+							<div class="footer-col">
+								<h4 class="footer-title">{{ t('about_us') }}</h4>
+								<ul class="list-unstyled footer-nav">
 									@foreach($pages as $page)
 										<li>
 											@php
@@ -55,11 +56,12 @@
 											@endif
 										</li>
 									@endforeach
-								@endif
-							</ul>
+								</ul>
+							</div>
 						</div>
-					</div>
+					@endif
 					
+					{{-- Contact and Sitemap Section --}}					
 					<div class="col">
 						<div class="footer-col">
 							<h4 class="footer-title">{{ t('Contact and Sitemap') }}</h4>
@@ -74,6 +76,7 @@
 						</div>
 					</div>
 					
+					{{-- My Account Section --}}
 					<div class="col">
 						<div class="footer-col">
 							<h4 class="footer-title">{{ t('My Account') }}</h4>

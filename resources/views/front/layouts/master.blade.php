@@ -231,16 +231,16 @@
 	var countryCode = '{{ config('country.code', 0)  }}';
 	var timerNewMessagesChecking = {{ (int)config('settings.other.timer_new_messages_checking', 0)  }};
 	
-	{{-- Dark Mode --}}
+	// {{-- Dark Mode --}}
 	var isSettingsAppDarkModeEnabled = {{ isSettingsAppDarkModeEnabled() ? 'true' : 'false' }};
 	var isDarkModeEnabledForCurrentUser = {{ isDarkModeEnabledForCurrentUser() ? 'true' : 'false' }};
 	var isDarkModeEnabledForCurrentDevice = {{ isDarkModeEnabledForCurrentDevice() ? 'true' : 'false' }};
 	
-	{{-- The app's default auth field --}}
+	// {{-- The app's default auth field --}}
 	var defaultAuthField = '{{ old('auth_field', getAuthField()) }}';
 	var phoneCountry = '{{ config('country.code') }}';
 	
-	{{-- Others global variables --}}
+	// {{-- Others global variables --}}
 	var fakeLocationsResults = "{{ config('settings.listings_list.fake_locations_results', 0) }}";
 </script>
 
@@ -273,12 +273,12 @@
 
 <script>
 	onDocumentReady((event) => {
-		{{-- Searchable Select Boxes --}}
+		// {{-- Searchable Select Boxes --}}
 		let largeDataSelect2Params = {
 			width: '100%',
 			dropdownAutoWidth: 'true'
 		};
-		{{-- Simple Select Boxes --}}
+		// {{-- Simple Select Boxes --}}
 		let select2Params = {...largeDataSelect2Params};
 		{{-- Hiding the search box --}}
 		select2Params.minimumResultsForSearch = Infinity;
@@ -291,10 +291,10 @@
 		$('.selecter').select2(select2Params);
 		$('.large-data-selecter').select2(largeDataSelect2Params);
 		
-		{{-- Social Media Share --}}
+		// {{-- Social Media Share --}}
 		SocialShare.init({width: 640, height: 480});
 		
-		{{-- Modal Login --}}
+		// {{-- Modal Login --}}
 		@if (isset($errors) && $errors->any())
 			@if ($errors->any() && old('quickLoginForm')=='1')
 				{{-- Re-open the modal if error occured --}}
@@ -302,7 +302,7 @@
 			@endif
 		@endif
 		
-		{{-- Reorder the modal country list --}}
+		// {{-- Reorder the modal country list --}}
 		const modalCountryListReorder = new BsRowColumnsReorder('#modalCountryList', {defaultColumns: 4});
 	});
 </script>

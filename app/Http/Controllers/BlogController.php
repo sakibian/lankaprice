@@ -2,11 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tag;
 use App\Models\Blog;
+use App\Models\Page;
+use Illuminate\Support\Str;
+use Mews\Purifier\Purifier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class BlogController extends Controller
 {
+
+    protected $purifier;
+
+    public function __construct(Purifier $purifier)
+    {
+        $this->purifier = $purifier;
+    }
 
     public function adminIndex()
     {
@@ -16,61 +29,129 @@ class BlogController extends Controller
 
     public function adminCreate()
     {
-        return view('admin.blogs.create');
+        $tags = Tag::all(); // Fetch all available tags
+        return view('admin.blogs.create', compact('tags'));
     }
 
     public function adminStore(Request $request)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|unique:blogs,slug',
-            'content' => 'required',
-            'image' => 'nullable|image|max:2048',
+        // **Validate Request Data**
+        $validatedData = $request->validate([
+            'title'   => 'required|string|max:255',
+            'content' => 'required|string',
+            'image'   => 'nullable|image|max:2048',
+            'slug'    => 'nullable|string|unique:blogs,slug',
+            'tags'    => 'array',
         ]);
-        
-        // Assign the authenticated user ID
-        $data['author_id'] = auth()->id(); 
-        
-        // Store image if uploaded
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('blogs', 'public');
+
+        // **Sanitize Content to Prevent XSS**
+        $validatedData['content'] = $this->purifier->clean($request->input('content'));
+
+        // **Generate Unique Slug if not provided**
+        if (!$request->filled('slug')) {
+            $baseSlug = Str::slug($validatedData['title']);
+            $slug = $baseSlug;
+            $count = 1;
+
+            while (Blog::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $count;
+                $count++;
+            }
+
+            $validatedData['slug'] = $slug;
         }
-        
-        // Create the blog post
-        Blog::create($data);
-        
+
+        // **Assign the authenticated user ID**
+        $validatedData['author_id'] = auth()->id();
+
+        // **Store Image if Uploaded**
+        if ($request->hasFile('image')) {
+            $validatedData['image'] = $request->file('image')->store('blogs', 'public');
+        }
+
+        // **Create Blog Post**
+        $blog = Blog::create($validatedData);
+
+        // Attach Tags
+        $tagIds = [];
+        foreach ($request->tags as $tagName) {
+            $tag = Tag::firstOrCreate(['name' => trim($tagName)]);
+            $tagIds[] = $tag->id;
+        }
+        $blog->tags()->sync($tagIds);
+
         return redirect()->route('admin.blogs')->with('success', 'Blog post created successfully.');
-        
     }
+
 
     public function adminEdit($id)
     {
         $blog = Blog::findOrFail($id);
-        return view('admin.blogs.edit', compact('blog'));
+        $tags = Tag::all();
+        return view('admin.blogs.edit', compact('blog', 'tags'));
     }
 
     public function adminUpdate(Request $request, $id)
     {
         $blog = Blog::findOrFail($id);
 
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|unique:blogs,slug,' . $id,
-            'content' => 'required',
-            'image' => 'nullable|image|max:2048',
+        // **Validate Request Data**
+        $validatedData = $request->validate([
+            'title'   => 'required|string|max:255',
+            'content' => 'required|string',
+            'image'   => 'nullable|image|max:2048',
+            'slug'    => 'nullable|string|unique:blogs,slug,' . $id,
+            'tags'    => 'array',
         ]);
 
-        // Keep the original author_id or update if necessary
-        $data['author_id'] = $blog->author_id ?? auth()->id(); 
+        // **Sanitize Content to Prevent XSS**
+        $validatedData['content'] = $this->purifier->clean($request->input('content'));
+        
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('blogs', 'public');
+        // **Generate Unique Slug if not provided**
+        if (!$request->filled('slug')) {
+            $baseSlug = Str::slug($validatedData['title']);
+            $slug = $baseSlug;
+            $count = 1;
+
+            while (Blog::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $count;
+                $count++;
+            }
+
+            $validatedData['slug'] = $slug;
         }
 
-        $blog->update($data);
-        
+        // **Assign the authenticated user ID if not already set**
+        $validatedData['author_id'] = $blog->author_id ?? auth()->id();
+
+        // **Store Image if Uploaded**
+        if ($request->hasFile('image')) {
+            // Delete the old image if a new one is uploaded
+            if ($blog->image) {
+                Storage::delete('public/' . $blog->image);
+            }
+            $validatedData['image'] = $request->file('image')->store('blogs', 'public');
+        }
+
+        // **Update the Blog Post**
+        $blog->update($validatedData);
+
+        // **Handle Tags**
+        if ($request->has('tags')) {
+            $tagIds = [];
+            foreach ($request->tags as $tagName) {
+                // Create new tags or get existing ones
+                $tag = Tag::firstOrCreate(['name' => trim($tagName)]);
+                $tagIds[] = $tag->id;
+            }
+            // Sync the tags to ensure the relationship is updated
+            $blog->tags()->sync($tagIds);
+        }
+
         return redirect()->route('admin.blogs')->with('success', 'Blog post updated successfully.');
     }
+
 
 
     public function adminDestroy($id)
@@ -83,8 +164,18 @@ class BlogController extends Controller
     public function index()
     {
         $blogs = Blog::latest()->paginate(10);
-        return view('front.blogs.index', compact('blogs'));
+        $pages = Page::all();
+    
+        $og = [
+            'title'       => 'Our Blogs',
+            'description' => Blog::latest()->value('content') 
+                ? Str::limit(strip_tags(Blog::latest()->value('content')), 150)
+                : 'Stay updated with our latest blog posts',
+        ];
+    
+        return view('front.blogs.index', compact('blogs', 'pages', 'og'));
     }
+    
 
    
     public function create()
@@ -102,8 +193,15 @@ class BlogController extends Controller
     public function show($slug)
     {
         $blog = Blog::where('slug', $slug)->firstOrFail();
-        return view('front.blogs.show', compact('blog'));
+    
+        $og = [
+            'title'       => $blog->title,
+            'description' => Str::limit(strip_tags($blog->content ?? ''), 150), // Ensure content is not null
+        ];
+    
+        return view('front.blogs.show', compact('blog', 'og'));
     }
+    
 
    
     public function edit(Blog $blog)

@@ -92,12 +92,12 @@
 @yield('before_scripts')
 
 <script>
-    {{-- The app's default auth field --}}
+    // {{-- The app's default auth field --}}
     var defaultAuthField = '{{ old('auth_field', getAuthField()) }}';
     var phoneCountry = '';
     
-    {{-- Others global variables --}}
-    {{-- ... --}}
+    // {{-- Others global variables --}}
+    // {{-- ... --}}
 </script>
 
 <script src="{{ admin_url('common/js/intl-tel-input/countries.js') . getPictureVersion() }}"></script>
@@ -313,7 +313,7 @@
 
 <script>
     onDocumentReady((event) => {
-        {{-- Maintenance Modal --}}
+        // {{-- Maintenance Modal --}}
         @if (isset($errors) && $errors->any())
             @if ($errors->any() && old('maintenanceForm')=='1')
                 {{-- Re-open the modal if error occured --}}
