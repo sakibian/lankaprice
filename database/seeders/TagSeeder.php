@@ -13,11 +13,12 @@ class TagSeeder extends Seeder
      */
     public function run(): void
     {
+
         $tags = [
-            'Laravel', 'PHP', 'JavaScript', 'React', 'Vue.js',
-            'Tailwind CSS', 'Bootstrap', 'MySQL', 'MongoDB', 'Node.js',
-            'API', 'RESTful', 'GraphQL', 'Web Development', 'Frontend',
-            'Backend', 'Full-Stack', 'DevOps', 'Cloud Computing', 'Cybersecurity'
+            'Cars', 'Van', 'Motorcycle', 'Three Wheel', 'SUV / JEEP',
+            'Bus', 'Lorry / Tipper', 'Bicycle', 'Tractor', 'Crew Cab', 'Pick up / Double Cab', 
+            'Heavy Duty', 'Boats & Water Transport', 'Auto Services',
+            'Auto Parts', 'Maintenance and Repair', 'Rentals', 'General', 'Other'
         ];
 
 
