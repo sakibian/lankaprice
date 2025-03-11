@@ -163,7 +163,11 @@ class BlogController extends Controller
    
     public function index()
     {
-        $blogs = Blog::latest()->paginate(10);
+
+        $blogs = Blog::latest()->paginate(6);
+        $recentBlogs = Blog::latest()->take(5)->get();
+        $tags = Tag::all();
+
         $pages = Page::all();
     
         $og = [
@@ -173,7 +177,7 @@ class BlogController extends Controller
                 : 'Stay updated with our latest blog posts',
         ];
     
-        return view('front.blogs.index', compact('blogs', 'pages', 'og'));
+        return view('front.blogs.index', compact('blogs', 'pages', 'og', 'recentBlogs', 'tags'));
     }
     
 
@@ -192,15 +196,26 @@ class BlogController extends Controller
     
     public function show($slug)
     {
+        // Get the blog post by its slug
         $blog = Blog::where('slug', $slug)->firstOrFail();
-    
+
+        // Get all tags (if you're using the tags in the sidebar)
+        $tags = Tag::all();
+
+        // Get the tag related to the blog post if needed
+        $recentBlogs = Blog::latest()->take(5)->get();
+
+        // Open Graph metadata (optional)
         $og = [
             'title'       => $blog->title,
             'description' => Str::limit(strip_tags($blog->content ?? ''), 150), // Ensure content is not null
         ];
-    
-        return view('front.blogs.show', compact('blog', 'og'));
+
+        // Pass variables to the view
+        return view('front.blogs.show', compact('blog', 'recentBlogs', 'tags', 'og'));
     }
+
+
     
 
    
@@ -220,6 +235,22 @@ class BlogController extends Controller
     {
         //
     }
+
+    public function filterByTag($slug)
+    {
+        $tag = Tag::where('slug', $slug)->firstOrFail();
+        $blogs = $tag->blogs()->paginate(6);
+        $recentBlogs = Blog::latest()->take(5)->get();
+        $tags = Tag::all();
+
+        $og = [
+            'title'       => $tag->name,
+            'description' => Str::limit(strip_tags($blog->content ?? ''), 150), // Ensure content is not null
+        ];
+
+        return view('front.blogs.index', compact('blogs', 'recentBlogs', 'tags', 'og'));
+    }
+
 
    
 

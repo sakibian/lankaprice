@@ -15,6 +15,7 @@
  */
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BlogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,8 @@ use Illuminate\Support\Facades\Route;
 | and give it the controller to call when that URI is requested.
 |
 */
+
+Route::get('/blog/tag/{slug}', [BlogController::class, 'filterByTag'])->name('blog.tag');
 
 // setup
 Route::namespace('Setup')->group(__DIR__ . '/web/setup.php');

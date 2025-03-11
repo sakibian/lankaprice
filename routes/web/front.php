@@ -66,6 +66,7 @@ $isDomainmappingAvailable = (plugin_exists('domainmapping') && plugin_installed_
 // Blog
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::get('/blog/tag/{slug}', [BlogController::class, 'filterByTag'])->name('blog.tag');
 
 // Select Language
 Route::namespace('Locale')
